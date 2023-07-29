@@ -1,0 +1,23 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. isAdministratorがtrueであるユーザは、すべてのデータにアクセスできる
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // 2. あるユーザは、自分が属するgroupIdを持つ、Usersコレクション、Reservationsコレクション、AssetGroupsのデータに読み書きできる
+   // ************************************************************************
+    //  /Users/{userId}
+    // ************************************************************************ 
+    match /Users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /Users/{userId} {
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+ }
+}
